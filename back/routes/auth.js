@@ -109,9 +109,9 @@ router.post('/login',async function(req, res, next) {
     tblModel
     .findOne({where:{email:req.body.email}})
     .then(async (datatemp) => {
-        let validate = false;
+        //let validate = false;
         if(datatemp!=null) {
-            validate = await new Promise(async (resolve, reject) => {
+            /*validate = await new Promise(async (resolve, reject) => {
                 bcrypt.compare(req.body.password, datatemp.password, function(err, resultado) {
                     if (typeof err === 'undefined') {
                         resolve(resultado);
@@ -120,7 +120,9 @@ router.post('/login',async function(req, res, next) {
                         reject(false);
                     }
                 });
-            });
+            });*/
+
+            const validate = await bcrypt.compare(req.body.password, datatemp.password);
 
             if(validate) {
                 let token = jwt.sign({ id: datatemp.id }, conf.secretKey, { expiresIn: 86400 });

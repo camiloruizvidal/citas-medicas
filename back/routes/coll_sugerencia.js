@@ -16,7 +16,7 @@ router.post('/',authenticate.auth, function(req, res, next)
     let pag = rq.pag
     let offset = (limit*pag)-limit;
     tblModel
-    .findAndCountAll({order: ['id'],offset: offset})
+    .findAndCountAll({order: [['fecha', 'DESC']],offset: offset})
     .then(function(datatemp)
     {
       let data={

@@ -1,6 +1,6 @@
 var sequelize = require('../config/dbcon');
 const Sequelize = require('sequelize');
-const nameSchema='coll_citas_estado';
+const nameSchema='coll_citas_estados';
 const schema = sequelize.define
 (
     nameSchema, 
