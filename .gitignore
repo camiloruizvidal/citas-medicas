@@ -1,0 +1,13 @@
+.DS_Store
+front/config/config.js
+android/android/*
+android/.gradle/*
+package-lock.json
+back/env.js
+back/bin/*
+back/node_modules/*
+front/node_modules/*
+front/src/assets/images/contacto.png
+front/src/assets/images/logo.png
+front/build/*
+mobile/node_modules/*
