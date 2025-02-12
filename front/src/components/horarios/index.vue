@@ -43,7 +43,7 @@
                             <b-dropdown id="dropdown-1" text="Opciones" class="m-md-2">
                                 <b-dropdown-item @click="eliminar(hor.id)">Eliminar</b-dropdown-item>
                             </b-dropdown>
-
+                            <pre>{{ hor }}</pre>
                         </td>
                         <td>{{hor.dia_nombre}}</td>
                         <td>{{hor.hora_inicio | formatHour}}</td>

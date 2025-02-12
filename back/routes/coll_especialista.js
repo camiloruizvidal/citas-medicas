@@ -90,84 +90,70 @@ router.post('/save',authenticate.auth, function(req, res, next)
         console.log(datares);
     });
 });
-
-router.post('/horario/save', async function(req, res) {
+router.post('/horario/save',async function(req, res)
+{
     const rq = req.body;
-    const tiempo = rq.tiempo;
-    const fecha = rq.dia;
-
-    const hora_fin = moment(`${rq.hora_fin.hh}:${rq.hora_fin.mm} ${rq.hora_fin.A}`, ["h:mm A"])
-                      .tz('America/Bogota')
-                      .format("HH:mm:ss");
-
-    const hora_inicio = moment(`${rq.hora_inicio.hh}:${rq.hora_inicio.mm} ${rq.hora_inicio.A}`, ["h:mm A"])
-                         .tz('America/Bogota')
-                         .format("HH:mm:ss");
-
-    const hora_start = moment(hora_inicio, "HH:mm:ss").tz('America/Bogota');
-    const hora_finish = moment(hora_fin, "HH:mm:ss").tz('America/Bogota');
-
-    if (hora_start.isAfter(hora_finish)) {
-        return res.status(400).send({
-            validate: false,
-            message: "La hora de inicio debe ser menor que la hora de fin."
-        });
-    }
-
-    if (hora_start.isSame(hora_finish)) {
-        return res.status(400).send({
-            validate: false,
-            message: "La hora de inicio y la hora de fin no pueden ser iguales."
-        });
-    }
-
-    const diferencia_en_minutos = hora_finish.diff(hora_start, 'minutes');
-    if (diferencia_en_minutos < tiempo) {
-        return res.status(400).send({
-            validate: false,
-            message: `El rango entre la hora de inicio y la hora de fin debe ser mayor o igual a ${tiempo} minutos.`
-        });
-    }
-
-    let hora_fin_adjusted = moment(hora_fin, "HH:mm:ss").add(1, 'second');
-
+    const tiempo      = rq.tiempo;
     let rangos = [];
     let i = 0;
     let isFinish = true;
+    const fecha = rq.dia;
+    let hora_fin    = moment(
+                          `${rq.hora_fin.hh}:${rq.hora_fin.mm} ${rq.hora_fin.A}`,
+                          ["h:mm A"]
+                      )
+                      .tz('America/Bogota')
+                      .format("HH:mm:ss")
 
-    let hora_actual_inicio = moment(hora_start).tz('America/Bogota');
-    let hora_actual_fin = moment(hora_actual_inicio).add(tiempo, 'minutes').tz('America/Bogota');
+    let hora_inicio = moment(
+                          `${rq.hora_inicio.hh}:${rq.hora_inicio.mm} ${rq.hora_inicio.A}`,
+                          ["h:mm A"]
+                      )
+                      .tz('America/Bogota')
+                      .format("HH:mm:ss")
 
-    while (isFinish) {
-        let hora_start_format = hora_actual_inicio.format('HH:mm');
-        let hora_finish_format = hora_actual_fin.format('HH:mm');
+    let hora_start  = moment(hora_inicio, ["HH:mm:ss"]).tz('America/Bogota');
+    let hora_finish = moment(hora_fin, ["HH:mm:ss"]).tz('America/Bogota');
 
+    hora_finish = moment(hora_start).add(tiempo, 'minutes')
+                    .tz('America/Bogota')
+                    .format('HH:mm:ss')
+
+    while(isFinish) {
+        hora_start  = moment(hora_inicio, ["HH:mm:ss"]).add(tiempo * i, 'minutes')
+                        .tz('America/Bogota')
+                        .format('HH:mm')
+        hora_finish = moment(hora_start, ["HH:mm:ss"]).add(tiempo, 'minutes')
+                        .tz('America/Bogota')
+                        .format('HH:mm')
+
+
+        console.log({
+            hora_start:hora_start,
+            hora_finish:hora_finish,
+        })
         rangos.push({
-            fecha: fecha,
-            hora_inicio: hora_start_format,
-            hora_fin: hora_finish_format
+            fecha           : fecha,
+            hora_inicio     : hora_start,
+            hora_fin        : hora_finish
+        });
+        tblEspecialistasHorario
+        .create({
+            id_especialista : parseInt(rq._id),
+            fecha           : fecha,
+            hora_inicio     : hora_start,
+            hora_fin        : hora_finish
+        })
+        .catch(function(response){
+            res.status(402).send({validate:false,data:response});
         });
 
-        try {
-            await tblEspecialistasHorario.create({
-                id_especialista: parseInt(rq._id),
-                fecha: fecha,
-                hora_inicio: hora_start_format,
-                hora_fin: hora_finish_format
-            });
-        } catch (error) {
-            return res.status(402).send({ validate: false, data: error });
-        }
+        isFinish = moment(hora_finish, ["HH:mm:ss"]) < moment(hora_fin, ["HH:mm:ss"])
 
-        hora_actual_inicio = moment(hora_actual_inicio).add(tiempo, 'minutes').tz('America/Bogota');
-        hora_actual_fin = moment(hora_actual_inicio).add(tiempo, 'minutes').tz('America/Bogota');
-
-        isFinish = hora_actual_fin.isBefore(hora_fin_adjusted);
+        i++;
     }
-
-    res.send({ validate: true, data: rangos });
+    res.send({validate:true,data:rangos});
 });
-
 router.post('/horario',authenticate.auth, async function(req,res,next)
 {
     try {

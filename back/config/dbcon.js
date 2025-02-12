@@ -1,13 +1,15 @@
 const Sequelize = require('sequelize')
 const database = require('../env');
 let sequelize = new Sequelize(
-  database.databaseName,
-  database.databaseUser,
-  database.databasePassword, {
-    host: database.databaseHost,
-    dialect: database.databaseType,
+  database.nombreBaseDeDatos,  // Nombre de tu base de datos
+  database.usuarioBaseDeDatos,    // Nombre de usuario de tu base de datos
+  database.contraseñaBaseDeDatos,       // Contraseña de tu base de datos
+  {
+    host: 'localhost',
+    dialect: 'postgresql',
     omitNull: true
-})
+  }
+)
 
 if(database.databaseTestConexion) {
   sequelize

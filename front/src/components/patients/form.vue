@@ -36,19 +36,29 @@
                     </div>
                     <div class="col-md">
                         <label>Fecha de nacimiento</label>
-                        <input v-model="forms.fecha_nacimiento" id="fecha_nacimiento" name="fecha_nacimiento" type="text" class="form-control" required>
+                        <input v-model="forms.fecha_nacimiento" id="fecha" name="fecha_nacimiento" type="text" class="form-control" required readonly>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md">
-                        <label>email</label>
-                        <input v-model="forms.email" type="email" class="form-control">
+                <!-- Campos ocultos -->
+                <div v-if="false">
+                    <div class="row">
+                        <div class="col-md">
+                            <label>email</label>
+                            <input v-model="forms.email" type="email" class="form-control">
+                        </div>
+                        <div class="col-md">
+                            <label>Numero de contacto</label>
+                            <input v-model="forms.numero_contacto" type="text" class="form-control">
+                        </div>
                     </div>
-                    <div class="col-md">
-                        <label>Numero de contacto</label>
-                        <input v-model="forms.numero_contacto" type="text" class="form-control" required>
+                    <div class="row">
+                        <div class="col-md">
+                            <label>Ciudad</label>
+                            <input v-model="forms.ciudad" type="text" class="form-control">
+                        </div>
                     </div>
                 </div>
+                <!-- Fin de campos ocultos -->
                 <div class="row">
                     <div class="col-md">
                         <br>
@@ -59,76 +69,58 @@
         </div>
     </div>
 </template>
+
 <script>
 export default {
     name: 'usuarios-form',
-    props:['form'],
-	data () {
+    data () {
         return {
-            disabled:false,
-            forms:
-            {
-                documento:'',
+            forms:{
+                nombre_primero:null,
+                nombre_segundo:null,
+                apellido_primero:null,
+                apellido_segundo:null,
+                documento:null,
                 documento_typo_id:'',
-                nombre_primero:'',
-                nombre_segundo:'',
-                apellido_primero:'',
-                apellido_segundo:'',
-                fecha_nacimiento:'',
-                email:'',
-                numero_contacto:''
+                fecha_nacimiento:null,
+                email:null,
+                numero_contacto:null,
+                pais:'Colombia',
+                ciudad:null
             },
-            arrayDocumentoTipo:[]
+            arrayDocumentoTipo:[],
+            disabled:false
         };
-  	},
-  	methods:{
-		start()
-		{
-            let me = this;
-            this.documentoTipo();
-            this.formulario();
-        },
-        formulario()
-        {
-            let me = this;
-            if (typeof me.form !== "undefined")
-            {
-                me.forms = me.form;
-            }
-        },
+    },
+    methods:{
         guardar()
         {
             let me = this;
-            //me.disabled=true;
-            me.$emit('guardar',me.forms);	
-        },
-        documentoTipo()
-        {
-            let me = this;
-			axios
-			.get(API_HOST+'/documentsTypes')
-			.then(function(response)
-			{
-				me.arrayDocumentoTipo = response.data.data;
-			})
-        },
+            me.disabled=true;
+            me.forms.fecha_nacimiento=$("#fecha").val();
+            axios
+            .post(API_HOST+'/patient/save',me.forms)
+            .then(function(response)
+            {
+                // Manejar respuesta
+            });
+        }
     },
-    mounted:function(){
+    mounted()
+    {
+        // Cargar tipos de documentos
         let me = this;
-        this.$parent._data.template='back'
-        this.start();
-        $('#fecha_nacimiento').datepicker({
-
-			onSelect: function(dateText, inst) 
-			{
-				me.forms.fecha_nacimiento=$(this).val();
-			},
-			dateFormat:'yy-mm-dd',
-			yearRange: "-150:+0",
-			maxDate:'+0',
-			changeMonth: true,
-      		changeYear: true
-		});
+        axios.get(API_HOST+'/documentsTypes')
+        .then(function(response)
+        {
+            me.arrayDocumentoTipo = response.data.data;
+        });
     }
 }
 </script>
+
+<style scoped>
+.table td.text-white {
+    color: white;
+}
+</style>

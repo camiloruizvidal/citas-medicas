@@ -16,7 +16,7 @@
                             <input @keyup.enter="loguearse()" type="password" v-model="form.password" name="password" id="password" class="form-control">
                         </div>
                         <div class="form-group">
-                            <button @click="loguearse()" name="submit" class="btn btn-info btn-md">Iniciar</button>
+                            <button :disabled="estaBloqueado" @click="loguearse()" name="submit" class="btn btn-info btn-md">Iniciar</button>
                         </div>
                     </div>
                 </div>
@@ -31,6 +31,7 @@ export default {
     data ()
     {
         return {
+            estaBloqueado: false,
             respuesta:'',
             form:{
                 email:'',
@@ -42,6 +43,7 @@ export default {
         loguearse()
         {
             let me = this;
+            me.estaBloqueado = true;
 			axios
 			.post(API_HOST+'/auth/login',me.form)
 			.then(function(response)
@@ -59,8 +61,14 @@ export default {
                 else
                 {
                     me.$swal('Error, no se puede iniciar session');
+                    me.estaBloqueado = false;
                 }
 			})
+            .catch((error) => {
+                console.error(error)
+                me.estaBloqueado = false;
+                me.$swal('Se ha presentado un error al iniciar sesión.');
+            })
         }
     },
     mounted:function()

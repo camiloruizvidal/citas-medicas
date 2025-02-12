@@ -488,6 +488,8 @@ export default{
 				{
 					$('input,select,textarea').attr('readonly','readonly');
 					me.$toasted.show('Se ha guardado su cita con exito');
+				}).catch(response => {
+					me.$toasted.show(response.response.data.data,{type : 'error',icon : 'error_outline'});
 				})
 			}
 			else{

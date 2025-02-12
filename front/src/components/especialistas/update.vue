@@ -49,7 +49,6 @@ export default {
                     me.form.documento_typo_id   = `${value.id_documento_tipo}`,
                     me.form.especialidad_id     = `${value.id_especialidad_tipo}`;
                     me.form.id                  = me.id;
-                    console.log(me.form);
                 }
                 else{
                     alert('error');

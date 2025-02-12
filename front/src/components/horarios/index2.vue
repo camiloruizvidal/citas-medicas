@@ -66,7 +66,7 @@ export default {
     filters:{
         formatHour(value)
         {
-            var date = new Date('2000-01-01 '+value);
+            /*var date = new Date('2000-01-01 '+value);
             var hours = date.getHours();
             var minutes = date.getMinutes();
             var ampm = hours >= 12 ? 'PM' : 'AM';
@@ -74,7 +74,15 @@ export default {
             hours = hours ? hours : 12;
             minutes = (minutes < 10 ? '0' :'')+ minutes;
             var strTime = (hours<10?'0':'') + hours + ':' + minutes + ' ' + ampm;
-            return strTime;
+            return strTime;*/
+            let [hora, minuto, segundo] = value.split(':');
+            let formato12 = '';
+            if (hora < 12) {
+                formato12 = (hora === '00' ? '12' : hora.padStart(2, '0')) + ':' + minuto + ' AM';
+            } else {
+                formato12 = (hora - 12 === 0 ? '12' : (hora - 12).toString().padStart(2, '0')) + ':' + minuto + ' PM';
+            }
+            return formato12;
         }
     },
     data()
@@ -127,6 +135,10 @@ export default {
                     me.arrayEspecialidad = response.data.data;
                     me.$swal('Creado con exito');
                     me.loadHorarios();
+                })
+                .catch(error => {
+                    const mensaje = error.response.data.message
+                    me.$swal(mensaje);
                 })
             }
         },

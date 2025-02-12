@@ -1,63 +1,54 @@
 <template>
     <div>
         <div class="row">
-		    <router-link :to="{ name: 'patient_create'}" class="btn btn-success"><i class="fas fa-plus"></i> Nuevo</router-link>
-      </div>
+            <router-link :to="{ name: 'patient_create'}" class="btn btn-success"><i class="fas fa-plus"></i> Nuevo</router-link>
+        </div>
         <div class="row">
             <label>Importar</label>
             <input type="file" @change="CargarPacientes" name="myfile" :disabled="arrayInsert.visible">
-      </div>
-      <div class="row">
-        <div class="alert alert-warning" role="alert" v-if="arrayInsert.visible">
-            subiendo <strong>{{arrayInsert.inc}}</strong> de <strong>{{arrayInsert.total}}</strong> pacientes
         </div>
-      </div>
-	  <div class="row">
-          <div class="col-md">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Opciones</th>
-                        <th>Nombres y apellidos</th>
-                        <th>Documento</th>
-                        <th>Email</th>
-                        <th>Fecha nacimiento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(patients,index) in arrayPatient" :key="index">
-                        <td>
-                            <div>
-                                <b-dropdown id="dropdown-1" text="Opciones" class="m-md-2">
-                                    <b-dropdown-item :to="{ name: 'patient_edit', params: { id: patients.id }}">
-                                        Editar
-                                    </b-dropdown-item>
-                                    <b-dropdown-item @click="eliminar(patients.id)" >Eliminar</b-dropdown-item>
-                                </b-dropdown>
-                            </div>
-                        </td>
-                        <td>
-                            {{patients.nombre_primero}}
-                            {{patients.nombre_segundo}}
-                            {{patients.apellido_primero}}
-                            {{patients.apellido_segundo}}
-
-                        </td>
-                        <td>
-                            {{patients.documento}}
-                        </td>
-                        <td>
-                            {{patients.email}}
-                        </td>
-                        <td>
-                            {{patients.fecha_nacimiento|dateFormat}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="row">
+            <div class="alert alert-warning" role="alert" v-if="arrayInsert.visible">
+                subiendo <strong>{{arrayInsert.inc}}</strong> de <strong>{{arrayInsert.total}}</strong> pacientes
+            </div>
         </div>
-    </div>
-    <div class="row">
+        <div class="row">
+            <div class="col-md">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Opciones</th>
+                            <th>Nombres y apellidos</th>
+                            <th>Documento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(patients,index) in arrayPatient" :key="index">
+                            <td>
+                                <div>
+                                    <b-dropdown id="dropdown-1" text="Opciones" class="m-md-2">
+                                        <b-dropdown-item :to="{ name: 'patient_edit', params: { id: patients.id }}">
+                                            Editar
+                                        </b-dropdown-item>
+                                        <b-dropdown-item @click="eliminar(patients.id)" >Eliminar</b-dropdown-item>
+                                    </b-dropdown>
+                                </div>
+                            </td>
+                            <td>
+                                {{patients.nombre_primero}}
+                                {{patients.nombre_segundo}}
+                                {{patients.apellido_primero}}
+                                {{patients.apellido_segundo}}
+                            </td>
+                            <td>
+                                {{patients.documento}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
@@ -77,6 +68,7 @@
         </div>
     </div>
 </template>
+
 <script>
 import formulario from './form';
 
@@ -84,15 +76,15 @@ export default {
     components:{formulario},
     name: 'usuarios-create',
     filters:
-	{
-		dateFormat: function (value)
-		{
-			var res = value.split("T");
-			return res[0];
-		}
-	},
-  	data () {
-    	return {
+    {
+        dateFormat: function (value)
+        {
+            var res = value.split("T");
+            return res[0];
+        }
+    },
+    data () {
+        return {
             arrayPatient:[],
             arrayInsert:{
                 total:0,
@@ -105,12 +97,11 @@ export default {
                 pages: 0,
                 total: 0
             }
-
         };
-  	},
-  	methods:{
-		start()
-		{
+    },
+    methods:{
+        start()
+        {
             let me = this;
             me.paginar(1);
         },
@@ -151,7 +142,6 @@ export default {
             {
                 if (result.value)
                 {
-
                     let errorFecha = false;
                     var resultadoFinal=[]
                     $.each(data,async function(index,value)
@@ -228,20 +218,20 @@ export default {
         async guardarMany(form)
         {
             let me = this;
-			await axios
-			.post(API_HOST+'/patient/saveMany',form)
-			.then(function(response)
-			{
+            await axios
+            .post(API_HOST+'/patient/saveMany',form)
+            .then(function(response)
+            {
                 me.paginar(1);
             });
         },
         async guardar(form)
         {
             let me = this;
-			await axios
-			.post(API_HOST+'/patient/save',form)
-			.then(function(response)
-			{
+            await axios
+            .post(API_HOST+'/patient/save',form)
+            .then(function(response)
+            {
             });
             return me.arrayInsert.inc+1;
         },
@@ -256,10 +246,10 @@ export default {
             {
                 pag=1;
             }
-			axios
-			.post(API_HOST+'/patient/',{pag:pag})
-			.then(function(response)
-			{
+            axios
+            .post(API_HOST+'/patient/',{pag:pag})
+            .then(function(response)
+            {
                 let value           = response.data.data;
                 me.arrayPatient     = value.docs;
                 me.pagination.limit = value.limit;
@@ -274,8 +264,13 @@ export default {
     },
     mounted:function(){
         this.$parent._data.template='back'
-        this.start()
+        this.start();
     }
-
 }
 </script>
+
+<style scoped>
+.table td.text-white {
+    color: white;
+}
+</style>

@@ -163,15 +163,15 @@
 						<label for="" class="form-label">Horas disponibles</label>
 						<input type="text" v-model="form.hora" v-if="form.hora!=''" class="others-2 form-control" style="background-color:#FFF" readonly>
 						<div class="container-fluid" id="div_hora">
-								<div class="row" v-for="(hora,index) in arrayHora" :key="index">
-									<div class="col-md" v-if="hora.disponible">
-										<div @click="NewHour(hora)" style="cursor: pointer;" :class="'alert alert-'+(hora.hora==form.hora?'secondary':'success')" role="alert">
-											{{hora.hora}}
-										</div>
+							<div class="row" v-for="(hora,index) in arrayHora" :key="index">
+								<div class="col-md">
+									<div @click="NewHour(hora)" style="cursor: pointer;" :class="'alert alert-'+(hora.hora==form.hora?'secondary':'success')" role="alert">
+										{{hora.hora}}
 									</div>
-
 								</div>
+
 							</div>
+						</div>
 					</div>
 					</div>
 					<div class="row">
@@ -303,23 +303,24 @@ export default{
 			.post(API_HOST+'/patient/documento',{documento:me.form.paciente.documento})
 			.then(function(response)
 			{
-				if(response.data.data!=null)
+				if(response.data.data!=null && response.data.validate)
 				{
 					let value						  = response.data.data;
-					let fecha			  			  = new Date(value.fecha_nacimiento);
-					me.form.paciente.documentoType	  = value.id_documentoType;
-					me.form.paciente.nombre_primero	  = value.nombre_primero;
-					me.form.paciente.nombre_segundo	  = value.nombre_segundo;
-					me.form.paciente.apellido_primero = value.apellido_primero;
-					me.form.paciente.apellido_segundo = value.apellido_segundo;
-					me.form.paciente.fecha_nacimiento = fecha.getFullYear() + "-" + (fecha.getMonth() +1) + "-" + fecha.getDate();
-					me.form.paciente.email			  = value.email;
-					me.form.paciente.numero_contacto  = value.numero_contacto;
-					me.form.paciente.pais			  = value.pais;
-					me.form.paciente.ciudad			  = value.ciudad;
+					let fecha			  			  = new Date(value.fecha_nacimiento) instanceof Date && !isNaN(new Date(value.fecha_nacimiento))
+														? (new Date(value.fecha_nacimiento)).getFullYear() +
+															"-" + ((new Date(value.fecha_nacimiento)).getMonth() +1) +
+															"-" + (new Date(value.fecha_nacimiento)).getDate()
+														: ''
+					me.form.paciente.documentoType	  = value.id_documentoType || me.form.paciente.documentoType
+					me.form.paciente.nombre_primero	  = value.nombre_primero || me.form.paciente.nombre_primero;
+					me.form.paciente.nombre_segundo	  = value.nombre_segundo || me.form.paciente.nombre_segundo;
+					me.form.paciente.apellido_primero = value.apellido_primero || me.form.paciente.apellido_primero;
+					me.form.paciente.apellido_segundo = value.apellido_segundo || me.form.paciente.apellido_segundo;
+					me.form.paciente.email			  = value.email || me.form.paciente.email;
+					me.form.paciente.numero_contacto  = value.numero_contacto || me.form.paciente.numero_contacto;
+					me.form.paciente.fecha_nacimiento = fecha || me.form.paciente.fecha_nacimiento;
 				}
 				else{
-					me.form.paciente.documentoType	  = '';
 					me.form.paciente.nombre_primero	  = '';
 					me.form.paciente.nombre_segundo	  = '';
 					me.form.paciente.apellido_primero = '';
@@ -327,8 +328,6 @@ export default{
 					me.form.paciente.fecha_nacimiento = '';
 					me.form.paciente.email			  = '';
 					me.form.paciente.numero_contacto  = '';
-					me.form.paciente.pais			  = '';
-					me.form.paciente.ciudad			  = '';
 				}
 			})
 		},
@@ -345,7 +344,10 @@ export default{
 				})
 				.then(function(response)
 				{
-					me.arrayHora = response.data.hora;
+					me.arrayHora = response.data;
+					console.log(
+						me.arrayHora , response.data.hora
+					)
 				})
 			}
 		},
@@ -450,6 +452,8 @@ export default{
 				{
 					$('input,select,textarea').attr('readonly','readonly');
 					me.$toasted.show('Se ha guardado su cita con exito');
+				}).catch(response => {
+					me.$toasted.show(response.response.data.data,{type : 'error',icon : 'error_outline'});
 				})
 			}
 			else{

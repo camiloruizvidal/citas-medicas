@@ -3,7 +3,6 @@ var express      = require('express');
 var path         = require('path');
 var cookieParser = require('cookie-parser');
 var logger       = require('morgan');
-let server       = require('./config/serve')
 var app          = express();
 const cors       = require('cors')
 const bcrypt     = require('bcrypt');
@@ -43,6 +42,7 @@ app.use('/', indexRouter);
 app.use('/especialista', especialista);
 app.use('/specialties', specialties);
 app.use('/documentsTypes', documents_types);
+app.use('/document_types', documents_types);
 app.use('/cita', citas);
 app.use('/eps', eps);
 app.use('/patient', patient);
