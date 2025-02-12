@@ -12,7 +12,7 @@
           <div
             class="sidebar-brand d-flex align-items-center justify-content-center"
           >
-            <div class="sidebar-brand-text mx-3">Gestion de Citas</div>
+            <div class="sidebar-brand-text mx-3">Agendador</div>
           </div>
 
           <!-- Divider -->
