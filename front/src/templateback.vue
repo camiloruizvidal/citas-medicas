@@ -118,7 +118,6 @@
                     text="Usuario"
                     right
                   >
-                    <b-dropdown-item>Opciones</b-dropdown-item>
                     <b-dropdown-item :to="{ name: 'chagePass' }">
                       Cambiar contrase&#241;a
                     </b-dropdown-item>
